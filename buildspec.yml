@@ -1,11 +1,5 @@
 version: 0.2
 
-# Variables que deben estar definidas en la consola de AWS CodeBuild (Environment variables):
-# - AWS_ACCOUNT_ID
-# - AWS_DEFAULT_REGION
-# - IMAGE_REPO_NAME
-# - CONTAINER_NAME
-
 phases:
   install:
     runtime-versions:
@@ -13,7 +7,13 @@ phases:
 
   pre_build:
     commands:
-      - echo "Autenticando en Amazon ECR..."
+      - echo "Inicializando variables de entorno..."
+      - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-965547804322}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+      - IMAGE_REPO_NAME=${IMAGE_REPO_NAME:-api-calendariolaboral}
+      - CONTAINER_NAME=${CONTAINER_NAME:-api-calendariolaboral-container}
+
+      - echo "Iniciando sesión en Amazon ECR..."
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
       - COMMIT_HASH=$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest} | cut -c 1-7)
@@ -23,14 +23,14 @@ phases:
 
   build:
     commands:
-      - echo "Iniciando construcción de la imagen Docker..."
+      - echo "Construyendo la imagen Docker..."
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG -t $REPOSITORY_URI:$IMAGE_TAG .
 
   post_build:
     commands:
       - echo "Subiendo la imagen a Amazon ECR..."
       - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - echo "Generando archivo imagedefinitions.json para deployment..."
+      - echo "Generando imagedefinitions.json..."
       - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$REPOSITORY_URI:$IMAGE_TAG" > imagedefinitions.json
 
 artifacts:
