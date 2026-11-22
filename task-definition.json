@@ -8,7 +8,7 @@
   "containerDefinitions": [
     {
       "name": "api-monedas-container", 
-      "image": "965547804322.dkr.ecr.us-east-2.amazonaws.com/api-monedas:latest", 
+      "image": "965547804322.dkr.ecr.us-east-2.amazonaws.com/api-calendariolaboral:latest", 
       "portMappings": [
         {
           "containerPort": 8080, 
