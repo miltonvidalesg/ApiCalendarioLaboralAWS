@@ -7,7 +7,7 @@
   "taskRoleArn": "arn:aws:iam::965547804322:role/api-calendariolaboral-task-role",
   "containerDefinitions": [
     {
-      "name": "api-monedas-container", 
+      "name": "api-calendariolaboral-container", 
       "image": "965547804322.dkr.ecr.us-east-2.amazonaws.com/api-calendariolaboral:latest", 
       "portMappings": [
         {
